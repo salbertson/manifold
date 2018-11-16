@@ -6,7 +6,7 @@ class AnnotationAuthorizer < ApplicationAuthorizer
   end
 
   def creatable_by?(user, _options = {})
-    return true unless Annotation::NOTATION_TYPES.include?(resource.format)
+    return user.role.present? unless Annotation::NOTATION_TYPES.include?(resource.format)
     resource&.text&.notatable_by? user || false
   end
 

@@ -58,6 +58,7 @@ export class FormContainer extends PureComponent {
     debug: false,
     groupErrors: false,
     flushOnUnmount: true,
+    modelName: "This model",
     options: {}
   };
 
@@ -215,6 +216,29 @@ export class FormContainer extends PureComponent {
     return false;
   }
 
+  renderGroupedErrors(props) {
+    if (!props.groupErrors || !props.errors) return null;
+    return (
+      <GlobalForm.Errorable
+        containerStyle={props.groupErrorsStyle}
+        className="form-input form-error-grouped"
+        name="*"
+        errors={props.errors}
+      />
+    );
+  }
+
+  renderModelErrors(props) {
+    if (props.groupErrors || !props.errors) return null;
+    return (
+      <GlobalForm.Errorable
+        name="attributes[base]"
+        errors={props.errors}
+        nameForError={props.modelName}
+      />
+    );
+  }
+
   renderDebugger() {
     if (!this.props.debug) return null;
     const debug = {
@@ -235,14 +259,7 @@ export class FormContainer extends PureComponent {
           message="You may have unsaved changes. Do you want to leave without saving your changes?"
         />
 
-        {this.props.groupErrors === true && this.props.errors ? (
-          <GlobalForm.Errorable
-            containerStyle={this.props.groupErrorsStyle}
-            className="form-input form-error-grouped"
-            name="*"
-            errors={this.props.errors}
-          />
-        ) : null}
+        {this.renderGroupedErrors(this.props)}
         <form
           onSubmit={this.handleSubmit}
           className={this.props.className}
@@ -252,6 +269,7 @@ export class FormContainer extends PureComponent {
             {this.props.children}
           </FormContext.Provider>
         </form>
+        {this.renderModelErrors(this.props)}
       </div>
     );
   }
